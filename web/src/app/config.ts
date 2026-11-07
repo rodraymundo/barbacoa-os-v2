@@ -1,2 +1,3 @@
-/** URL del backend Spring Boot. Cambiala al desplegar. */
-export const API_URL = 'http://localhost:8080/api';
+export const API_URL = location.hostname === 'localhost'
+  ? 'http://localhost:8080/api'
+  : 'https://barbacoa-api-xxxx.onrender.com/api';

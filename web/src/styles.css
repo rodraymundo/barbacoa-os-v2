@@ -1,0 +1,65 @@
+:root {
+  --vino: #7a1c24;
+  --vino-oscuro: #5a1218;
+  --ambar: #f2b632;
+  --fondo: #f1f0ee;
+  --superficie: #ffffff;
+  --texto: #231f1e;
+  --suave: #6d6560;
+  --borde: #ddd8d3;
+  --ok: #2e7d4f;
+  --alerta: #c0392b;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  line-height: 1.45;
+}
+main { max-width: 1200px; margin: 0 auto; padding: 24px 20px 60px; }
+h1 { font-size: 1.7rem; margin: 0 0 18px; }
+h2, h3 { margin: 0 0 10px; }
+
+.card { background: var(--superficie); border: 1px solid var(--borde); border-radius: 10px; padding: 16px; }
+.grid { display: grid; gap: 16px; }
+
+.btn {
+  border: 0; border-radius: 8px; padding: 9px 16px; font: inherit; font-weight: 600;
+  background: var(--vino); color: #fff; cursor: pointer;
+}
+.btn:hover { background: var(--vino-oscuro); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+.btn.ambar { background: var(--ambar); color: #2b2100; }
+.btn.ambar:hover { background: #e0a420; }
+.btn.ghost { background: transparent; color: inherit; border: 1px solid currentColor; }
+.btn.ghost:hover { background: rgba(0,0,0,.06); }
+.btn.peligro { background: var(--alerta); }
+.btn.chico { padding: 5px 10px; font-size: .85rem; }
+:focus-visible { outline: 3px solid var(--ambar); outline-offset: 2px; }
+
+input, select, textarea {
+  font: inherit; padding: 8px 10px; border: 1px solid var(--borde); border-radius: 8px;
+  background: #fff; color: var(--texto); width: 100%;
+}
+label { display: block; font-size: .85rem; color: var(--suave); margin-bottom: 4px; }
+.campo { margin-bottom: 12px; }
+.error { color: var(--alerta); font-size: .9rem; margin: 8px 0; }
+
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--borde); }
+th { font-size: .8rem; color: var(--suave); font-weight: 600; }
+
+.etiqueta {
+  display: inline-block; padding: 2px 9px; border-radius: 99px; font-size: .78rem; font-weight: 600;
+  background: #eee; color: #444;
+}
+.etiqueta.ok { background: #dff3e6; color: var(--ok); }
+.etiqueta.off { background: #f6dcd9; color: var(--alerta); }
+
+@media print {
+  .topbar, .no-imprimir { display: none !important; }
+  body { background: #fff; }
+  main { padding: 0; }
+}

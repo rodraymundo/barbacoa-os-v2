@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.angular/
+target/
+data/
+build/
+.dart_tool/
+.idea/
+*.iml
+.env
+*.env

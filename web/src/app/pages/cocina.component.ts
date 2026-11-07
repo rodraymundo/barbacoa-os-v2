@@ -9,6 +9,7 @@ interface Columna { estado: EstadoPedido; titulo: string; accion?: string; sigui
   standalone: true,
   template: `
     <div class="tablero">
+      <div class="contenido">
       <div class="cab"><h1>Cocina</h1><span>{{ pedidos.length }} pedidos en curso · se actualiza solo cada 5 s</span></div>
       @if (error) { <p class="error">{{ error }}</p> }
       <div class="columnas">
@@ -31,10 +32,13 @@ interface Columna { estado: EstadoPedido; titulo: string; accion?: string; sigui
           </section>
         }
       </div>
+      </div>
     </div>
   `,
   styles: [`
-    .tablero { background: #1d1a19; color: #f4efeb; margin: -24px -20px -60px; padding: 24px 20px 60px; min-height: calc(100vh - 56px); }
+    .tablero { background: #1d1a19; color: #f4efeb; width: 100vw; margin: -24px 0 -60px calc(50% - 50vw);
+    padding: 24px 0 60px; min-height: calc(100vh - 56px); }
+    .contenido { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
     .cab { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; }
     .cab span { color: #a79f99; font-size: .9rem; }
     .columnas { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; align-items: start; }

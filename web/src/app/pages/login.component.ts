@@ -9,9 +9,8 @@ import { AuthService } from '../core/auth.service';
   imports: [FormsModule],
   template: `
     <div class="caja card">
-      <div class="logo" aria-hidden="true">
-        <!-- Reemplaza por tu logo: <img src="assets/logo.png" alt="Barbacoa OS"> -->
-        <span>B</span>
+      <div class="logo">
+        <img src="assets/logo.png" alt="Barbacoa OS">
       </div>
       <h1>Iniciar sesión</h1>
       <form (ngSubmit)="entrar()" #f="ngForm">
@@ -32,9 +31,9 @@ import { AuthService } from '../core/auth.service';
   `,
   styles: [`
     .caja { max-width: 380px; margin: 9vh auto 0; padding: 30px 28px; }
-    .logo { width: 72px; height: 72px; border-radius: 50%; background: var(--vino); color: var(--ambar);
-      display: grid; place-items: center; font-size: 2rem; font-weight: 800; margin: 0 auto 14px; overflow: hidden; }
-    h1 { text-align: center; font-size: 1.4rem; }
+    .logo { width: 96px; height: 96px; background: none; display: grid; place-items: center;
+      margin: 0 auto 14px; }
+      .logo img { width: 100%; height: 100%; object-fit: contain; }
   `]
 })
 export class LoginComponent {

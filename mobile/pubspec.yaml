@@ -24,4 +24,4 @@ flutter:
   uses-material-design: true
   # Cuando tengas el logo: copialo a assets/logo.png y descomenta
   # assets:
-  #   - assets/logo.png
+  assets/logo.png

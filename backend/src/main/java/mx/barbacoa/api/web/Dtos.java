@@ -8,6 +8,9 @@ import mx.barbacoa.api.model.EstadoPedido;
 import mx.barbacoa.api.model.Mesa;
 import mx.barbacoa.api.model.Producto;
 
+import jakarta.validation.constraints.Size;
+import mx.barbacoa.api.model.EstadoTicket;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -58,4 +61,12 @@ public final class Dtos {
     public record ResumenDto(BigDecimal ventasHoy, long pedidosHoy, BigDecimal ticketPromedio,
                              long pedidosActivos, Map<String, Long> pedidosPorEstado,
                              List<VentaDia> ventasPorDia, List<TopProducto> topProductos) {}
+
+        // ----- soporte tecnico
+    public record TicketRequest(@NotBlank @Size(max = 120) String asunto,
+                                @NotBlank @Size(max = 1000) String descripcion) {}
+    public record TicketRespuestaRequest(@NotNull EstadoTicket estado, @Size(max = 1000) String respuesta) {}
+    public record TicketDto(Long id, String usuarioNombre, String usuarioRol, String asunto,
+                            String descripcion, String estado, String respuesta,
+                            LocalDateTime fechaCreacion, LocalDateTime fechaActualizacion) {}                         
 }

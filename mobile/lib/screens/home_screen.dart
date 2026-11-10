@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'historial_screen.dart';
+import 'soporte_screen.dart';
 
 import '../providers/auth_provider.dart';
 import '../providers/order_provider.dart';
@@ -147,13 +149,35 @@ class _PerfilTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final nombre = context.watch<AuthProvider>().nombre ?? 'Mesero';
-    return Center(
-      child: Column(mainAxisSize: MainAxisSize.min, children: [
-        const CircleAvatar(radius: 40, child: Icon(Icons.person, size: 42)),
+    return ListView(
+      padding: const EdgeInsets.all(20),
+      children: [
+        const SizedBox(height: 10),
+        const Center(child: CircleAvatar(radius: 40, child: Icon(Icons.person, size: 42))),
         const SizedBox(height: 12),
-        Text(nombre, style: Theme.of(context).textTheme.titleLarge),
-        const Text('Rol: Mesero', style: TextStyle(color: Colors.black54)),
-      ]),
+        Center(child: Text(nombre, style: Theme.of(context).textTheme.titleLarge)),
+        const Center(child: Text('Rol: Mesero', style: TextStyle(color: Colors.black54))),
+        const SizedBox(height: 24),
+        Card(
+          child: Column(children: [
+            ListTile(
+              leading: const Icon(Icons.history),
+              title: const Text('Historial de pedidos'),
+              subtitle: const Text('Las órdenes que has tomado'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const HistorialScreen())),
+            ),
+            const Divider(height: 1),
+            ListTile(
+              leading: const Icon(Icons.support_agent),
+              title: const Text('Soporte técnico'),
+              subtitle: const Text('Reporta un problema y revisa las respuestas'),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const SoporteScreen())),
+            ),
+          ]),
+        ),
+      ],
     );
   }
 }

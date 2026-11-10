@@ -14,4 +14,5 @@ public interface PedidoRepository extends JpaRepository<Pedido, Long> {
     List<Pedido> findByEstadoInOrderByFechaCreacionAsc(Collection<EstadoPedido> estados);
     List<Pedido> findTop50ByOrderByFechaCreacionDesc();
     List<Pedido> findByFechaCreacionGreaterThanEqual(LocalDateTime desde);
+    List<Pedido> findTop100ByMeseroUsernameOrderByFechaCreacionDesc(String username);
 }

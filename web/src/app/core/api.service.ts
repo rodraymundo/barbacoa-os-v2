@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { API_URL } from '../config';
-import { EstadoPedido, Mesa, Pedido, Producto, Resumen } from '../models';
+import { EstadoPedido, Mesa, Pedido, Producto, Resumen, EstadoTicket, Ticket } from '../models';
 
 @Injectable({ providedIn: 'root' })
 export class ApiService {
@@ -33,4 +33,15 @@ export class ApiService {
 
   // dashboard
   dashboard() { return this.http.get<Resumen>(`${API_URL}/dashboard`); }
+
+    // historial y soporte
+  historial() { return this.http.get<Pedido[]>(`${API_URL}/pedidos/historial`); }
+  crearTicket(asunto: string, descripcion: string) {
+    return this.http.post<Ticket>(`${API_URL}/soporte`, { asunto, descripcion });
+  }
+  misTickets() { return this.http.get<Ticket[]>(`${API_URL}/soporte/mios`); }
+  todosTickets() { return this.http.get<Ticket[]>(`${API_URL}/soporte`); }
+  responderTicket(id: number, estado: EstadoTicket, respuesta: string) {
+    return this.http.patch<Ticket>(`${API_URL}/soporte/${id}`, { estado, respuesta });
+  }
 }

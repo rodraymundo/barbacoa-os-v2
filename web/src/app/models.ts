@@ -23,3 +23,10 @@ export interface Resumen {
   ventasPorDia: { fecha: string; total: number }[];
   topProductos: { nombre: string; cantidad: number }[];
 }
+
+export type EstadoTicket = 'ABIERTO' | 'EN_PROCESO' | 'RESUELTO';
+
+export interface Ticket {
+  id: number; usuarioNombre: string; usuarioRol: string; asunto: string; descripcion: string;
+  estado: EstadoTicket; respuesta: string | null; fechaCreacion: string; fechaActualizacion: string;
+}

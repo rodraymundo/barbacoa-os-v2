@@ -51,4 +51,10 @@ public class PedidoController {
                                    Authentication auth) {
         return service.cambiarEstado(id, req.estado(), auth.getName());
     }
+
+    /** Pedidos que abrió el usuario autenticado (los 100 más recientes). */
+    @GetMapping("/historial")
+    public List<PedidoDto> historial(Authentication auth) {
+        return service.historial(auth.getName());
+    }
 }

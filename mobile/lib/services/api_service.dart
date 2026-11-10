@@ -95,4 +95,21 @@ class ApiService {
         headers: _headers, body: jsonEncode({'estado': estado})));
     return Pedido.fromJson(data as Map<String, dynamic>);
   }
+
+    Future<List<Pedido>> historial() async {
+    final data = await _send(() => http.get(_u('/pedidos/historial'), headers: _headers));
+    return (data as List).map((e) => Pedido.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<List<Ticket>> misTickets() async {
+    final data = await _send(() => http.get(_u('/soporte/mios'), headers: _headers));
+    return (data as List).map((e) => Ticket.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  Future<Ticket> crearTicket(String asunto, String descripcion) async {
+    final data = await _send(() => http.post(_u('/soporte'),
+        headers: _headers,
+        body: jsonEncode({'asunto': asunto, 'descripcion': descripcion})));
+    return Ticket.fromJson(data as Map<String, dynamic>);
+  }
 }

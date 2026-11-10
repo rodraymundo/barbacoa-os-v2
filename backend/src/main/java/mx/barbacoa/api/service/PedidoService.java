@@ -64,6 +64,12 @@ public class PedidoService {
         return toDto(buscar(id));
     }
 
+        @Transactional(readOnly = true)
+    public List<PedidoDto> historial(String username) {
+        return pedidos.findTop100ByMeseroUsernameOrderByFechaCreacionDesc(username)
+                .stream().map(this::toDto).toList();
+    }
+
     @Transactional
     public PedidoDto agregarItem(Long id, ItemRequest req) {
         Pedido p = buscar(id);

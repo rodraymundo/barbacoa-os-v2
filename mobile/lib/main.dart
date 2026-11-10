@@ -17,6 +17,7 @@ Future<void> main() async {
   await auth.restaurarSesion();
   runApp(MultiProvider(
     providers: [
+      Provider<ApiService>.value(value: api),
       ChangeNotifierProvider.value(value: auth),
       ChangeNotifierProvider(create: (_) => OrderProvider(api)),
     ],

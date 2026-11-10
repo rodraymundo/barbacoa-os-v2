@@ -22,6 +22,10 @@ import { AuthService } from './core/auth.service';
           @if (s.rol === 'ADMIN' || s.rol === 'MESERO') {
             <a routerLink="/mesero" routerLinkActive="activo">Mesero</a>
           }
+                    @if (s.rol === 'ADMIN' || s.rol === 'MESERO') {
+            <a routerLink="/historial" routerLinkActive="activo">Historial</a>
+          }
+          <a routerLink="/soporte" routerLinkActive="activo">Soporte</a>
         </nav>
         <span class="usuario">{{ s.nombre }}</span>
         <button class="btn ghost chico" (click)="auth.logout()">Cerrar sesión</button>

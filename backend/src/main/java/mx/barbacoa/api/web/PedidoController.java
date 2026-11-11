@@ -17,7 +17,7 @@ import java.util.List;
 public class PedidoController {
     private final PedidoService service;
 
-    /** Movil: manda {"codigoQr": "..."}; web: manda {"mesaId": 1}. */
+    /** Movil: {"codigoQr": "..."}; web: {"mesaId": 1}. */
     @PostMapping
     @PreAuthorize("hasAnyRole('MESERO','ADMIN')")
     public PedidoDto abrir(@RequestBody AbrirPedidoRequest req, Authentication auth) {
@@ -25,36 +25,37 @@ public class PedidoController {
     }
 
     @GetMapping
-    public List<PedidoDto> listar(@RequestParam(required = false) List<EstadoPedido> estados) {
-        return service.listar(estados);
+    public List<PedidoDto> listar(@RequestParam(required = false) List<EstadoPedido> estados,
+                                  Authentication auth) {
+        return service.listar(estados, auth.getName());
+    }
+
+    @GetMapping("/historial")
+    public List<PedidoDto> historial(Authentication auth) {
+        return service.historial(auth.getName());
     }
 
     @GetMapping("/{id}")
-    public PedidoDto obtener(@PathVariable Long id) {
-        return service.obtener(id);
+    public PedidoDto obtener(@PathVariable Long id, Authentication auth) {
+        return service.obtener(id, auth.getName());
     }
 
     @PostMapping("/{id}/items")
     @PreAuthorize("hasAnyRole('MESERO','ADMIN')")
-    public PedidoDto agregarItem(@PathVariable Long id, @Valid @RequestBody ItemRequest req) {
-        return service.agregarItem(id, req);
+    public PedidoDto agregarItem(@PathVariable Long id, @Valid @RequestBody ItemRequest req,
+                                 Authentication auth) {
+        return service.agregarItem(id, req, auth.getName());
     }
 
     @DeleteMapping("/{id}/items/{itemId}")
     @PreAuthorize("hasAnyRole('MESERO','ADMIN')")
-    public PedidoDto quitarItem(@PathVariable Long id, @PathVariable Long itemId) {
-        return service.quitarItem(id, itemId);
+    public PedidoDto quitarItem(@PathVariable Long id, @PathVariable Long itemId, Authentication auth) {
+        return service.quitarItem(id, itemId, auth.getName());
     }
 
     @PatchMapping("/{id}/estado")
     public PedidoDto cambiarEstado(@PathVariable Long id, @Valid @RequestBody EstadoRequest req,
                                    Authentication auth) {
         return service.cambiarEstado(id, req.estado(), auth.getName());
-    }
-
-    /** Pedidos que abrió el usuario autenticado (los 100 más recientes). */
-    @GetMapping("/historial")
-    public List<PedidoDto> historial(Authentication auth) {
-        return service.historial(auth.getName());
     }
 }

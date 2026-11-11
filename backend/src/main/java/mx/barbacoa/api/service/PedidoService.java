@@ -25,9 +25,10 @@ public class PedidoService {
     private final ProductoRepository productos;
     private final UsuarioRepository usuarios;
 
-    /** Abre el pedido de una mesa; si ya hay uno activo, devuelve ese mismo (escanear dos veces no duplica). */
+    /** Abre el pedido de una mesa. Si ya hay uno activo, solo lo recupera su dueño (o el admin). */
     @Transactional
     public PedidoDto abrir(AbrirPedidoRequest req, String username) {
+        Usuario usuario = usuario(username);
         Mesa mesa;
         if (req.codigoQr() != null && !req.codigoQr().isBlank()) {
             mesa = mesas.findByCodigoQr(req.codigoQr().trim())
@@ -38,41 +39,49 @@ public class PedidoService {
         } else {
             throw new ApiException(HttpStatus.BAD_REQUEST, "Indica la mesa o el código QR");
         }
-        Pedido pedido = pedidos.findFirstByMesaIdAndEstadoInOrderByIdDesc(mesa.getId(), ACTIVOS)
-                .orElseGet(() -> {
-                    Pedido p = new Pedido();
-                    p.setMesa(mesa);
-                    p.setMesero(usuarios.findByUsername(username).orElse(null));
-                    p.setEstado(EstadoPedido.ABIERTO);
-                    p.setFechaCreacion(LocalDateTime.now());
-                    mesa.setEstado(EstadoMesa.OCUPADA);
-                    return pedidos.save(p);
-                });
-        return toDto(pedido);
+        Pedido existente = pedidos.findFirstByMesaIdAndEstadoInOrderByIdDesc(mesa.getId(), ACTIVOS).orElse(null);
+        if (existente != null) {
+            verificarAcceso(existente, usuario);
+            return toDto(existente);
+        }
+        Pedido p = new Pedido();
+        p.setMesa(mesa);
+        p.setMesero(usuario);              // el dueño sale del token, nunca del cliente
+        p.setEstado(EstadoPedido.ABIERTO);
+        p.setFechaCreacion(LocalDateTime.now());
+        mesa.setEstado(EstadoMesa.OCUPADA);
+        return toDto(pedidos.save(p));
     }
 
     @Transactional(readOnly = true)
-    public List<PedidoDto> listar(List<EstadoPedido> estados) {
+    public List<PedidoDto> listar(List<EstadoPedido> estados, String username) {
+        Usuario u = usuario(username);
         List<Pedido> lista = (estados == null || estados.isEmpty())
                 ? pedidos.findTop50ByOrderByFechaCreacionDesc()
                 : pedidos.findByEstadoInOrderByFechaCreacionAsc(estados);
+        if (u.getRol() == Rol.MESERO) {
+            lista = lista.stream().filter(p -> esDe(p, u)).toList();
+        }
         return lista.stream().map(this::toDto).toList();
     }
 
     @Transactional(readOnly = true)
-    public PedidoDto obtener(Long id) {
-        return toDto(buscar(id));
+    public PedidoDto obtener(Long id, String username) {
+        Pedido p = buscar(id);
+        verificarAcceso(p, usuario(username));
+        return toDto(p);
     }
 
-        @Transactional(readOnly = true)
+    @Transactional(readOnly = true)
     public List<PedidoDto> historial(String username) {
         return pedidos.findTop100ByMeseroUsernameOrderByFechaCreacionDesc(username)
                 .stream().map(this::toDto).toList();
     }
 
     @Transactional
-    public PedidoDto agregarItem(Long id, ItemRequest req) {
+    public PedidoDto agregarItem(Long id, ItemRequest req, String username) {
         Pedido p = buscar(id);
+        verificarAcceso(p, usuario(username));
         if (p.getEstado() != EstadoPedido.ABIERTO && p.getEstado() != EstadoPedido.PENDIENTE) {
             throw new ApiException(HttpStatus.CONFLICT, "Este pedido ya no admite productos");
         }
@@ -102,8 +111,9 @@ public class PedidoService {
     }
 
     @Transactional
-    public PedidoDto quitarItem(Long id, Long itemId) {
+    public PedidoDto quitarItem(Long id, Long itemId, String username) {
         Pedido p = buscar(id);
+        verificarAcceso(p, usuario(username));
         if (p.getEstado() != EstadoPedido.ABIERTO) {
             throw new ApiException(HttpStatus.CONFLICT, "Solo se pueden quitar productos antes de enviar a cocina");
         }
@@ -115,8 +125,8 @@ public class PedidoService {
     @Transactional
     public PedidoDto cambiarEstado(Long id, EstadoPedido nuevo, String username) {
         Pedido p = buscar(id);
-        Usuario u = usuarios.findByUsername(username)
-                .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Sesión inválida"));
+        Usuario u = usuario(username);
+        verificarAcceso(p, u);
         if (!permitido(u.getRol(), p.getEstado(), nuevo)) {
             throw new ApiException(HttpStatus.FORBIDDEN, "No puedes pasar el pedido de "
                     + p.getEstado() + " a " + nuevo);
@@ -131,7 +141,18 @@ public class PedidoService {
         return toDto(p);
     }
 
-    /** Reglas del flujo: quien puede mover un pedido de un estado a otro. */
+    /** Control de acceso por dueño: un mesero solo toca sus pedidos. Cocina y admin pasan este filtro. */
+    private void verificarAcceso(Pedido p, Usuario u) {
+        if (u.getRol() == Rol.MESERO && !esDe(p, u)) {
+            throw new ApiException(HttpStatus.FORBIDDEN, "Este pedido pertenece a otro mesero");
+        }
+    }
+
+    private boolean esDe(Pedido p, Usuario u) {
+        return p.getMesero() != null && Objects.equals(p.getMesero().getId(), u.getId());
+    }
+
+    /** Reglas del flujo: quién puede mover un pedido de un estado a otro. */
     private boolean permitido(Rol rol, EstadoPedido de, EstadoPedido a) {
         return switch (rol) {
             case ADMIN -> true;
@@ -142,6 +163,11 @@ public class PedidoService {
                     || (a == EstadoPedido.CANCELADO
                         && (de == EstadoPedido.ABIERTO || de == EstadoPedido.PENDIENTE));
         };
+    }
+
+    private Usuario usuario(String username) {
+        return usuarios.findByUsername(username)
+                .orElseThrow(() -> new ApiException(HttpStatus.UNAUTHORIZED, "Sesión inválida"));
     }
 
     private Pedido buscar(Long id) {

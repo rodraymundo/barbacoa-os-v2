@@ -98,3 +98,4 @@ git checkout -b reinicio
 git add -A && git commit -m "Reconstrucción desde cero" && git push -u origin reinicio
 ```
 `Barbacoa-Os` ← `backend/` y `web/` · `barbacoa-movil-` ← contenido de `mobile/` (después de `flutter create`).
+

@@ -30,7 +30,7 @@ class ApiService {
 
   Future<dynamic> _send(Future<http.Response> Function() call) async {
     try {
-      final res = await call().timeout(const Duration(seconds: 10));
+      final res = await call().timeout(const Duration(seconds: timeoutSegundos));
       if (res.statusCode >= 200 && res.statusCode < 300) {
         return res.body.isEmpty ? null : jsonDecode(utf8.decode(res.bodyBytes));
       }

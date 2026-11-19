@@ -6,3 +6,5 @@ const String apiUrl = String.fromEnvironment(
   'API_URL',
   defaultValue: 'http://10.0.2.2:8080/api',
 );
+
+const int timeoutSegundos = int.fromEnvironment('TIMEOUT_SEG', defaultValue: 60);
